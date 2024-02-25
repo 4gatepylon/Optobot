@@ -76,6 +76,46 @@ def valid_keyword(keyword: str) -> Optional[Command]:
     except:
         return None
 
+def run(keyword, client, scope_folder):
+    keywords = [x.strip() for x in keyword.split("&&")]
+    for keyword in keywords:
+        keyword = keyword.lower()
+        # Enable repetitions
+        if keyword== "r" and last_keyword is not None:
+            keyword = last_keyword
+        last_keyword = keyword
+        # ...
+        kw = valid_keyword(keyword)
+        if kw is None:
+            print("Invalid keyword")
+            continue
+        if kw.ctype == CommandType.MOVE_REL:
+            print("was type move_rel!", kw.format()) # XXX
+            client.move_relative(kw.format())
+        elif kw.ctype == CommandType.MOVE_ABS:
+            print("was type move_abs!", kw.format()) # XXX
+            client.move_absolute(kw.format())
+        elif kw.ctype == CommandType.IMAGE:
+            print("was type image!", kw.format()) # XXX
+            # NOTE that this is a PIL image
+            im = client.image()
+            im_name = kw.format()
+            im_file = (scope_folder / im_name).as_posix()
+            im.save(im_file)
+        elif kw.ctype == CommandType.IMAGE_SEQ:
+            fmt = kw.format()
+            print("was type image_seq!", fmt)
+            image_pos(fmt, client=client)
+        elif kw.ctype == CommandType.INFO:
+            curr_pos = client.get_position()
+            print(f"Current position:")
+            print("\tx: ", curr_pos["x"])
+            print("\ty: ", curr_pos["y"])
+            print("\tz: ", curr_pos["z"])
+        else:
+            # Should never be reached
+            raise ValueError(f"Command was not a valid command! type of kw={type(kw)} type of kw ctype={type(kw.ctype)}")
+
 def main():
     # To make sure you get these, run export $(cat .env) and make sure you have these environment variables there,
     # Ask adriano, Yusuf or one of the other Labsmore people
@@ -95,44 +135,12 @@ def main():
     keyword = None
     while keyword != exit_keyword:
         keyword = input("Enter a command: ")
-        keywords = [x.strip() for x in keyword.split("&&")]
-        for keyword in keywords:
-            keyword = keyword.lower()
-            # Enable repetitions
-            if keyword== "r" and last_keyword is not None:
-                keyword = last_keyword
-            last_keyword = keyword
-            # ...
-            kw = valid_keyword(keyword)
-            if kw is None:
-                print("Invalid keyword")
-                continue
-            if kw.ctype == CommandType.MOVE_REL:
-                print("was type move_rel!", kw.format()) # XXX
-                client.move_relative(kw.format())
-            elif kw.ctype == CommandType.MOVE_ABS:
-                print("was type move_abs!", kw.format()) # XXX
-                client.move_absolute(kw.format())
-            elif kw.ctype == CommandType.IMAGE:
-                print("was type image!", kw.format()) # XXX
-                # NOTE that this is a PIL image
-                im = client.image()
-                im_name = kw.format()
-                im_file = (scope_folder / im_name).as_posix()
-                im.save(im_file)
-            elif kw.ctype == CommandType.IMAGE_SEQ:
-                fmt = kw.format()
-                print("was type image_seq!", fmt)
-                image_pos(fmt, client=client)
-            elif kw.ctype == CommandType.INFO:
-                curr_pos = client.get_position()
-                print(f"Current position:")
-                print("\tx: ", curr_pos["x"])
-                print("\ty: ", curr_pos["y"])
-                print("\tz: ", curr_pos["z"])
-            else:
-                # Should never be reached
-                raise ValueError(f"Command was not a valid command! type of kw={type(kw)} type of kw ctype={type(kw.ctype)}")
+        if keyword.startswith("forever"):
+            keyword = keyword[len("forever"):].strip()
+            while True:
+                run(keyword, client, scope_folder)
+        else:
+            run(keyword, client, scope_folder)
     print("")
     print("Done!")
 
