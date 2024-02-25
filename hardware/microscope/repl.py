@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import requests 
 from typing import Optional, Union
@@ -6,6 +8,8 @@ from enum import Enum
 from datetime import datetime
 from pathlib import Path
 
+from microscope_moves import image_pos
+
 # TODO(Adriano) add support for move relative vs. move absolute
 # TODO(Adriano) add support for imaging with a filename
 # TODO(Adriano) support back key
@@ -13,6 +17,8 @@ class CommandType(Enum):
     MOVE_REL = "move_rel"
     MOVE_ABS = "move_abs"
     IMAGE = "image"
+    IMAGE_SEQ = "image_seq"
+    INFO = "info"
 
 class Command:
     def __init__(self, ctype: CommandType, arguments: list[Union[str, float]]):
@@ -21,12 +27,26 @@ class Command:
         self.arguments = arguments
     
     def format(self) -> str:
-        assert self.ctype in [CommandType.MOVE_REL, CommandType.MOVE_ABS, CommandType.IMAGE]
-        assert len(self.arguments) == 2 if self.ctype == CommandType.MOVE else len(self.arguments) in [0, 1]
-        if self.ctype == CommandType.MOVE_REL or self.ctype == CommandType.MOVE_ABS:
-            return {self.arguments[0]: float(self.arguments[1])}
+        assert self.ctype in [CommandType.MOVE_REL, CommandType.MOVE_ABS, CommandType.IMAGE, CommandType.IMAGE_SEQ, CommandType.INFO]
+        assert(len(self.arguments) % 2 == 0 or len(self.arguments) == 3) if self.ctype in [CommandType.MOVE_ABS, CommandType.MOVE_REL, CommandType.IMAGE_SEQ] else len(self.arguments) in [0, 1]
+        # all these three need the location
+        if self.ctype == CommandType.MOVE_REL or self.ctype == CommandType.MOVE_ABS or self.ctype == CommandType.IMAGE_SEQ:
+            d = {}
+            if len(self.arguments) == 3:
+                d["x"] = float(self.arguments[0])
+                d["y"] = float(self.arguments[1])
+                d["z"] = float(self.arguments[2])
+            else:
+                for i in range(0, len(self.arguments), 2):
+                    d[self.arguments[i]] = float(self.arguments[i+1])
+            print("EXTRACTED MOVE: ", d) # Debug!
+            return d
+        # this just needs maybe the image name optionally
         elif self.ctype == CommandType.IMAGE:
             return self.arguments[0] if len(self.arguments) == 1 else None
+        elif self.ctype == CommandType.INFO:
+            assert len(self.arguments) == 0
+            return None
         else:
             raise ValueError(f"Invalid command type {self.ctype.value}")
 
@@ -41,12 +61,17 @@ def valid_keyword(keyword: str) -> Optional[Command]:
     if len(keywords) == 0:
         return None
     try:
+        # Just some hotkeys... probably a cleaner way to do this in the future somewhere else!
         if keywords[0] == "m" or keywords[0] == "move":
             keywords[0] = "move_rel"
         if keywords[0] == "a":
             keywords[0] = "move_abs"
         if keywords[0] == "i":
             keywords[0] = "image"
+        if keywords[0] == "is" or keywords[0] == "s":
+            keywords[0] = "image_seq"
+        if keywords[0] == "p" or keywords[0] == "pos" or keywords[0] == "position":
+            keywords[0] = "info"
         return Command(CommandType(keywords[0]), arguments=keywords[1:])
     except:
         return None
@@ -93,6 +118,16 @@ def main():
             im_name = kw.format()
             im_file = (scope_folder / im_name).as_posix()
             im.save(im_file)
+        elif kw.ctype == CommandType.IMAGE_SEQ:
+            fmt = kw.format()
+            print("was type image_seq!", fmt)
+            image_pos(fmt, client=client)
+        elif kw.ctype == CommandType.INFO:
+            curr_pos = client.get_position()
+            print(f"Current position:")
+            print("\tx: ", curr_pos["x"])
+            print("\ty: ", curr_pos["y"])
+            print("\tz: ", curr_pos["z"])
         else:
             # Should never be reached
             raise ValueError(f"Command was not a valid command! type of kw={type(kw)} type of kw ctype={type(kw.ctype)}")

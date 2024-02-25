@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import os
-import requests
-import base64
-from PIL import Image
-import io
+import time
 from typing import Optional
 from datetime import datetime
 from web_example import PyuscopeHTTPClient
