@@ -8,6 +8,7 @@ from PIL import Image
 import io
 from typing import Optional
 
+# TODO(Adriano) write a simple library to let you define your movements in markdown and support robustness.
 class PyuscopeHTTPClient:
     """A class to help you make basic moves of a microscope. This is copied (with only minor modifications) from
     https://github.com/Labsmore/pyuscope/blob/main/examples/web_example.py

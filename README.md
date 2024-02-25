@@ -1,2 +1,6 @@
 # Optobot
 A robotic system that combines a robotic arm and a microsocpe (each of which is controllable) to automatically place and image cover slides for microscopy purposes.
+
+Look into `./hardware/` to see the code that will run on our robotic system. We have some code to control a robotic arm mounted on a stand as well as some code to control a microscope. Both are over LAN. The robotic arm has a little robot movement server that takes in some basic instructions as well as an on-board controller that tells it what to do. This onboard control (Nvidia Jetson) is also what is going to be controlling the microscope over the LAN, and thus what is going to be controlling our entire hardware setup.
+
+Any sort of web-stuff in `./online` is a seperate system that is mainly meant for storage and user searches later. If it exists, its APIs are used to write by the robot, but a human on the ground has to trigger the robot to run. To run it you should `ssh` into the Jetson onboard control chip and run the hardware `main.py` script that runs the desired script.

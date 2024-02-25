@@ -3,6 +3,9 @@ import time
 import re
 import numpy
 
+DEFAULT_HOST = "10.10.10.40"
+DEFAULT_PORT = 10100
+
 class PA3400:
     # Network interface with Precise Automation PF3400 SCARA arm
     # Requires "Tcp_cmd_server" to be running on arm to accept TCP connections
@@ -168,78 +171,82 @@ class PA3400:
         self.sendcmd('mspeed ' + str(speed))
         self.rapid = speed
 
-preciseBoiAddress = {'host':'10.10.10.40','port':10100}
+def main():
+    preciseBoiAddress = {'host':DEFAULT_HOST,'port':DEFAULT_PORT}
 
-robot = PA3400(preciseBoiAddress)
+    robot = PA3400(preciseBoiAddress)
 
-robot.connect()
-robot.enable()
+    robot.connect()
+    robot.enable()
 
-robot.maxSpeed = 80
+    robot.maxSpeed = 80
 
-robot.gohome()
-# time.sleep(8)
+    robot.gohome()
+    # time.sleep(8)
 
-#top of bottle 244 (Z)
-# bottom of bottle 164 (Z)
-# row 5 -411 (Y)
-# row 4 -333 (Y)
-# row 1 -155 (Y)
-# place on shelf -200 (X)
-# approach shelf -100 (X)
+    #top of bottle 244 (Z)
+    # bottom of bottle 164 (Z)
+    # row 5 -411 (Y)
+    # row 4 -333 (Y)
+    # row 1 -155 (Y)
+    # place on shelf -200 (X)
+    # approach shelf -100 (X)
 
-pos = [-100, -155, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(3)
-pos = [-200, -155, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-200, -155, 164, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-200, -155, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-100, -155, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
+    pos = [-100, -155, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(3)
+    pos = [-200, -155, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-200, -155, 164, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-200, -155, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-100, -155, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
 
-pos = [-100, -411, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-200, -411, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-200, -411, 164, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-200, -411, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
-pos = [-100, -411, 244, 179.99, 90, -180, 2]
-robot.movec(pos)
-# time.sleep(2)
+    pos = [-100, -411, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-200, -411, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-200, -411, 164, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-200, -411, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
+    pos = [-100, -411, 244, 179.99, 90, -180, 2]
+    robot.movec(pos)
+    # time.sleep(2)
 
-# pos = [300, 0, 600, 120, 90, -180, 1]
-# robot.movec(pos)
-# time.sleep(30)
-# pos = [300, 0, 600, 120, 90, -180, 2]
-# robot.movec(pos)
-# time.sleep(30)
-#
-#
-#
-#
-# robot.gohome()
-# time.sleep(3)
-#
-# pos = [300, 0, 300, 90, 90, -180, 2]
-# robot.movec(pos)
-# time.sleep(3)
+    # pos = [300, 0, 600, 120, 90, -180, 1]
+    # robot.movec(pos)
+    # time.sleep(30)
+    # pos = [300, 0, 600, 120, 90, -180, 2]
+    # robot.movec(pos)
+    # time.sleep(30)
+    #
+    #
+    #
+    #
+    # robot.gohome()
+    # time.sleep(3)
+    #
+    # pos = [300, 0, 300, 90, 90, -180, 2]
+    # robot.movec(pos)
+    # time.sleep(3)
 
-robot.gohome()
-# time.sleep(8)
-time.sleep(20)
+    robot.gohome()
+    # time.sleep(8)
+    time.sleep(20)
 
-robot.disable()
-robot.disconnect()
+    robot.disable()
+    robot.disconnect()
+
+if __name__ == "__main__":
+    main()
