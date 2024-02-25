@@ -8,8 +8,10 @@ from pathlib import Path
 
 # TODO(Adriano) add support for move relative vs. move absolute
 # TODO(Adriano) add support for imaging with a filename
+# TODO(Adriano) support back key
 class CommandType(Enum):
-    MOVE = "move"
+    MOVE_REL = "move_rel"
+    MOVE_ABS = "move_abs"
     IMAGE = "image"
 
 class Command:
@@ -19,9 +21,9 @@ class Command:
         self.arguments = arguments
     
     def format(self) -> str:
-        assert self.ctype in [CommandType.MOVE, CommandType.IMAGE]
+        assert self.ctype in [CommandType.MOVE_REL, CommandType.MOVE_ABS, CommandType.IMAGE]
         assert len(self.arguments) == 2 if self.ctype == CommandType.MOVE else len(self.arguments) in [0, 1]
-        if self.ctype == CommandType.MOVE:
+        if self.ctype == CommandType.MOVE_REL or self.ctype == CommandType.MOVE_ABS:
             return {self.arguments[0]: float(self.arguments[1])}
         elif self.ctype == CommandType.IMAGE:
             return self.arguments[0] if len(self.arguments) == 1 else None
@@ -39,8 +41,10 @@ def valid_keyword(keyword: str) -> Optional[Command]:
     if len(keywords) == 0:
         return None
     try:
-        if keywords[0] == "m":
-            keywords[0] = "move"
+        if keywords[0] == "m" or keywords[0] == "move":
+            keywords[0] = "move_rel"
+        if keywords[0] == "a":
+            keywords[0] = "move_abs"
         if keywords[0] == "i":
             keywords[0] = "image"
         return Command(CommandType(keywords[0]), arguments=keywords[1:])
@@ -76,9 +80,12 @@ def main():
         if kw is None:
             print("Invalid keyword")
             continue
-        if kw.ctype == CommandType.MOVE:
-            print("was type move!", kw.format()) # XXX
+        if kw.ctype == CommandType.MOVE_REL:
+            print("was type move_rel!", kw.format()) # XXX
             client.move_relative(kw.format())
+        elif kw.ctype == CommandType.MOVE_ABS:
+            print("was type move_abs!", kw.format()) # XXX
+            client.move_absolute(kw.format())
         elif kw.ctype == CommandType.IMAGE:
             print("was type image!", kw.format()) # XXX
             # NOTE that this is a PIL image

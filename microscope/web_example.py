@@ -39,6 +39,7 @@ class PyuscopeHTTPClient:
             query_str = "?" + "&".join(f"{k}={v}"
                                        for k, v in query_args.items())
         response = requests.get(self.base_url + page + query_str)
+        response.raise_for_status() # TODO
         return response.json()
 
     def get_position(self):
