@@ -171,6 +171,19 @@ class PA3400:
         self.sendcmd('mspeed ' + str(speed))
         self.rapid = speed
 
+def move_to_position(pos: list[float]) -> bool: # TODO(Adriano) we need to actually test his
+    assert len(pos) == 7
+    assert all(isinstance(p, float) for p in pos)
+    robot = PA3400({'host':DEFAULT_HOST,'port':DEFAULT_PORT})
+    robot.connect()
+    robot.enable()
+    robot.maxSpeed = 80
+    time.sleep(1)
+    robot.movec(pos)
+    time.sleep(1)
+    return True
+
+
 def main():
     preciseBoiAddress = {'host':DEFAULT_HOST,'port':DEFAULT_PORT}
 

@@ -1,7 +1,8 @@
 # Not clear what main does (TODO(Adriano))
-from arm.sample_movement import main
+from arm.sample_movement import go_to_pos as arm_go_to_pos
 # Image position is going to image the position requested FROM THE REFERENCE FRAME OF THE MICROSCOPE
-from microscope.microscope_moves import image_pos, go_to_pos
+from microscope.microscope_moves import image_pos as microscope_image_pos
+from microscope.microscope_moves import go_to_pos as microscope_go_to_pos
 
 ARM_POSITIONS = {
     'home': [0, 0, 0, 0, 0, 0], # TODO
@@ -62,13 +63,14 @@ def main():
     # NOTE that in each case the instruction is a POSITION and but it may implicitely imply doing certain more things!
     for actor_name, instruction in INSTR_SEQUENCE:
         if actor_name == 'arm':
-            raise NotImplementedError # It's not main XXX
+            print(f"ARM MOVING TO: {' '.join(str(n) for n in ARM_POSITIONS[instruction])}")
+            arm_go_to_pos(ARM_POSITIONS[instruction])
         elif actor_name == 'scope':
             if instruction == 'image':
-                image_pos(MICROSCOPE_POSITIONS[instruction])
+                microscope_image_pos(MICROSCOPE_POSITIONS[instruction])
                 print("Imaging!")
             elif instruction == 'home':
-                go_to_pos(MICROSCOPE_POSITIONS[instruction])
+                microscope_go_to_pos(MICROSCOPE_POSITIONS[instruction])
                 print("Microscope going home!")
             else:
                 raise ValueError("GOT WRONG INSTRUCTION FOR MICROSCOPE")
