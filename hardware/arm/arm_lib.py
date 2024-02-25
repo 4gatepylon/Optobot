@@ -8,6 +8,9 @@ from typing import Union
 
 from dynio import *
 
+DEFAULT_HOST = "10.10.10.40"
+DEFAULT_PORT = 10100
+
 class PA3400_ZeroTorque:
     def __init__(self, address, port):
         self.address = address
@@ -210,6 +213,9 @@ class PA3400:
     #     else:
     #         return
 
+    def disable_zero_torque(self):
+        self.send_command("zeroTorque 1 15")
+
     @property
     def maxSpeed(self):
         return self.rapid
@@ -224,10 +230,18 @@ class Gripper:
         self.dxl_io = dxl.DynamixelIO(port, baud_rate=baud_rate)
         self.gripper_id = gripper_id
 
+        self.default_open_grip = 200
+        self.default_close_grip = 70
+        # TODO do this in a better way please
+        self.grip_step = 10
+
+    def grip(self, amt: float):
+        self.dxl_io.set_goal_position(self.gripper_id, int(amt * 1023))
+
     def open_gripper(self):
-        self.dxl_io.set_goal_position(self.gripper_id, 200)  # Open position
+        self.dxl_io.set_goal_position(self.gripper_id, self.default_open_grip)  # Open position
         time.sleep(1)  # Wait for the gripper to open
 
     def close_gripper(self):
-        self.dxl_io.set_goal_position(self.gripper_id, 70)  # Closed position
+        self.dxl_io.set_goal_position(self.gripper_id, self.default_close_grip)  # Closed position
         time.sleep(1)  # Wait for the gripper to close
