@@ -8,6 +8,9 @@ from typing import Union
 
 from dynio import *
 
+DEFAULT_HOST = "10.10.10.40"
+DEFAULT_PORT = 10100
+
 class PA3400_ZeroTorque:
     def __init__(self, address, port):
         self.address = address
