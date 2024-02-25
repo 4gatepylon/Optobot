@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import os
+import requests
+import base64
+from PIL import Image
+import io
+from typing import Optional
 from datetime import datetime
 from web_example import PyuscopeHTTPClient
 from typing import Optional
@@ -38,8 +44,8 @@ def image_pos(right_pos: dict[str, float], client: Optional[PyuscopeHTTPClient] 
     
     #Iterate down the 4 slides
     for i in range(3):
-        right_pos["y"] += delta
-
+        right_pos["x"] += delta
+        time.sleep(1)
         client.move_absolute(right_pos)
         print(f"(debug) Moved tp position: {right_pos}")
         im = client.image()
