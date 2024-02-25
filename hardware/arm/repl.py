@@ -1,8 +1,21 @@
 from __future__ import annotations
 
-def execute_cmd(cmd):
-    print("dummy! execute here later")
-    pass
+def parse_command(self, _cmd: str) -> tuple[str, list[str]]:
+    _cmd = _cmd.strip()
+    keyword, cmd = _cmd.split(" ", 1)
+    cmd = cmd.strip()
+    cmd = cmd.split(" ")
+    cmd = [x.strip() for x in cmd]
+    cmd = [x for x in cmd if x != ""]
+    return keyword, cmd
+
+def execute_cmd(cmd: str, robot: PA3400, ) -> str:
+    keyword, args = parse_command(cmd)
+    if keyword == "m":
+        move(args)
+    elif keyword == "l":
+        set_linear()
+
 
 def play_recording(recording):
     raise NotImplementedError
