@@ -3,6 +3,8 @@ import time
 import re
 import numpy
 
+# Demo
+
 DEFAULT_HOST = "10.10.10.40"
 DEFAULT_PORT = 10100
 
@@ -74,7 +76,7 @@ class PA3400:
         # pos = [X, Y, Z, Y, P, R]
         #
         # movec <profile#> <X> <Y> <Z> <Yaw> <pitch> <roll> [<handedness>]
-        self.curpos = pos
+        self.curpos = pos # Not sure w
         cmd = 'movea 1 ' + ' '.join(str(n) for n in pos1) + ' '.join(str(n) for n in pos2)
         self.sendcmd(cmd)
 
