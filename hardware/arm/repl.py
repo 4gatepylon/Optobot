@@ -64,8 +64,8 @@ def main():
 
     """
     # Initialize hardware
-    preciseBoiAddress = {'host':DEFAULT_HOST,'port':DEFAULT_PORT}
-    robot = PA3400(preciseBoiAddress)
+    # preciseBoiAddress = {'host':DEFAULT_HOST,'port':DEFAULT_PORT}
+    robot = PA3400(DEFAULT_HOST, DEFAULT_PORT)
     robot.connect()
     robot.enable()
     robot.set_linear_motion()
